@@ -27,47 +27,6 @@ def dict2list(datadict):
     print("Test session keys: ", list(datadict.keys()))
     return whole_data
 
-def inject_anomaly(ori_data):
-    #col_name = ['sample_time', 'time_diff', 'user_diff', 'unique_query_id_fre', 'client_addr_fre', 'databaseid_fre']
-
-    ano_data=copy.deepcopy(ori_data) # (10, 6, 100, 1)
-    sp=ano_data.shape
-    print(sp)
-    ano_data=np.reshape(ano_data, (sp[0], sp[1], sp[2]))
-
-    # time_diff
-    for idx in range(0, 200):
-        for i in range(sp[2]):
-            if ano_data[idx][3][i]>0:
-                ano_data[idx][1][i]=1.0
-
-    ## userdiff
-    for idx in range(200, 300):
-        for i in range(sp[2]):
-            if ano_data[idx][3][i] > 0:
-                ano_data[idx][2][i] = 1.0
-
-    #'unique_query_id_fre'
-    for idx in range(300, 500):
-        for i in range(sp[2]):
-            if ano_data[idx][3][i] > 0:
-                ano_data[idx][3][i] = 1.0
-
-    # client_addr_fre
-    for idx in range(500, 700):
-        for i in range(sp[2]):
-            if ano_data[idx][3][i] > 0:
-                ano_data[idx][4][i] = 1.0
-
-    # 'databaseid_fre'
-    for idx in range(700,900):
-        for i in range(sp[2]):
-            if ano_data[idx][3][i] > 0:
-                ano_data[idx][5][i] = 1.0
-
-    ano_data=np.expand_dims(ano_data, axis=-1)
-    return ano_data
-
 def display_rec(x_test, decoded_imgs):
     n = 10
     plt.figure(figsize=(20, 4))
@@ -146,7 +105,7 @@ def add_noise(ddict, noise_pro):
     return ddict
 
 def sessdict2Matrix(ddict, dim):
-    # 一个session变成固定的长度
+    # transform session into fix length
     mat=[]
     for k,v in ddict.items():
         vec=[0]*dim
@@ -209,14 +168,8 @@ def evaluate(model, data, itemnum, args, sess, stage='train'):
         target = data[u][-1]
 
         item_idx=[i for i in range(1, itemnum + 1)]
-        '''
-        item_idx = [target]
-        for _ in range(40):  # 需要修改 model里的test_shape; 修改rank取第一个 rank=0
-            t = np.random.randint(1, itemnum + 1)
-            while t in rated: t = np.random.randint(1, itemnum + 1)
-            item_idx.append(t)
-        '''
-        predictions = -model.predict(sess, [u], [seq], item_idx)  # 注意这里是需要从小大大排序，所以取负值
+        
+        predictions = -model.predict(sess, [u], [seq], item_idx)  # sort from low to high, so using negative.
         predictions = predictions[0]
 
         rank = predictions.argsort().argsort()[target-1]  # 0 target-1

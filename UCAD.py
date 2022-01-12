@@ -109,7 +109,7 @@ parser.add_argument('--warmup_steps', default=50.0, type=float)
 parser.add_argument('--margin', default=0.5, type=int)  # top_n=150 on bgl
 parser.add_argument('--top_n', default=150, type=int, help="top n candidate for evaluating.")
 parser.add_argument('--pro', default=0.8, type=float, help="train and testing data split.")
-parser.add_argument('--isTrain', default=False, type=bool)
+parser.add_argument('--isTrain', default=True, type=bool)
 
 args = parser.parse_args()
 if not os.path.isdir(args.dataset + '_' + args.train_dir):
@@ -164,7 +164,7 @@ try:
                 print ('Evaluating',)
                 t_test = evaluate_each(model, session_train, querynum, args, sess)
                 print ('\nepoch:%d, HR@%d: %d / %d = %.4f)' % (
-                epoch, args.top_n, t_test[1], t_test[2], t_test[1]/t_test[2])) # valid (NDCG@10: %.4f, HR@10: %.4f), t_valid[0], t_valid[1],
+                epoch, args.top_n, t_test[0], t_test[1], t_test[0]/t_test[1])) # valid (NDCG@10: %.4f, HR@10: %.4f), t_valid[0], t_valid[1],
 
                 f.write(str(t_test) + '\n')
                 f.flush()

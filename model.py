@@ -62,7 +62,7 @@ class UCAD():
     def __init__(self, usernum, itemnum, args, reuse=None):
         self.is_training = tf.placeholder(tf.bool, shape=())
         self.u = tf.placeholder(tf.int32, shape=(None))
-        self.input_seq = tf.placeholder(tf.int32, shape=(None, args.maxlen))  # None 对应batch_size, maxlen是取最近的多少item
+        self.input_seq = tf.placeholder(tf.int32, shape=(None, args.maxlen))  # None -- batch_size
         self.pos = tf.placeholder(tf.int32, shape=(None, args.maxlen))
         self.neg = tf.placeholder(tf.int32, shape=(None, args.maxlen))
         pos = self.pos
